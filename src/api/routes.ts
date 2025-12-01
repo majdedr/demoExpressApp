@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import booksRoutes from './books/books.routes';
+import {booksRoutes} from './books/books.routes';
 import swaggerUi from 'swagger-ui-express';
 import { readFileSync } from 'fs';
 import path from 'path';

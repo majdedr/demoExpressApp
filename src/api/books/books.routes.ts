@@ -1,101 +1,66 @@
-import { Router, Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { Router, Request, Response } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { matchedData } from "express-validator";
 
-const router = Router();
+import { createBookValidator, getBookByIdValidator } from "./books.validators";
+import { IBook, TCreateBookBody } from "./books.types";
+import { validate } from "../../middlewares/validate";
 
-// Define a type for the Book object
-interface Book {
-	id: string;
-	title: string;
-	author: string;
-	isbn?: string;
-}
+export const booksRoutes = Router();
 
-// Example data (this would typically come from a database)
-const books: Book[] = [
-	{ id: '1', title: 'Book One', author: 'Author One' },
-	{ id: '2', title: 'Book Two', author: 'Author Two' },
+// Example data
+const books: IBook[] = [
+  { id: "1", title: "Book One", author: "Author One" },
+  { id: "2", title: "Book Two", author: "Author Two" },
 ];
 
 /**
- * @swagger
- * /books:
- *   get:
- *     summary: Get all books
- *     tags: [Books]
- *     responses:
- *       200:
- *         description: List of books
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/BookResponse'
+ * GET /books
  */
-router.get('/', (req: Request, res: Response) => {
-	res.json(books);
+booksRoutes.get("/", (req: Request, res: Response) => {
+  res.json(books);
 });
 
 /**
- * @swagger
- * /books:
- *   post:
- *     summary: Create a book
- *     tags: [Books]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/BookInsert'
- *     responses:
- *       201:
- *         description: Book created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BookResponse'
+ * POST /books
  */
-router.post('/', (req: Request, res: Response) => {
-	const { title, author, isbn } = req.body;
-	if (!title || !author) {
-		return res.status(400).json({ message: 'title and author are required' });
-	}
-	const newBook: Book = { id: uuidv4(), title, author, isbn };
-	books.push(newBook);
-	return res.status(201).json(newBook);
-});
+booksRoutes.post(
+  "/",
+  createBookValidator,
+  validate,
+  (req: Request, res: Response) => {
+    // Extract the validated + sanitized data
+    const { title, author, isbn } = matchedData<TCreateBookBody>(req);
+
+    const newBook: IBook = {
+      id: uuidv4(),
+      title,
+      author,
+      isbn,
+    };
+
+    books.push(newBook);
+
+    return res.status(201).json(newBook);
+  }
+);
 
 /**
- * @swagger
- * /books/{id}:
- *   get:
- *     summary: Get a book by id
- *     tags: [Books]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: The book
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BookResponse'
- *       404:
- *         description: Book not found
+ * GET /books/:id
  */
-router.get('/:id', (req: Request, res: Response) => {
-	const book = books.find((b) => b.id === req.params.id);
-	if (book) {
-		res.json(book);
-	} else {
-		res.status(404).send('Book not found');
-	}
-});
+booksRoutes.get(
+  "/:id",
+  getBookByIdValidator,
+  validate,
+  (req: Request, res: Response) => {
+    const { id } = matchedData<{ id: string }>(req);
 
-export default router;
+    const book = books.find((b) => b.id === id);
+
+    if (!book) {
+      return res.status(404).send("Book not found");
+    }
+
+    res.json(book);
+  }
+);
