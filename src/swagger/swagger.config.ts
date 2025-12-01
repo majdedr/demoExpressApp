@@ -23,6 +23,9 @@ const swaggerSpec = swaggerJsdoc({
 });
 
 mkdirSync(path.join(process.cwd(), 'dist'), { recursive: true });
-writeFileSync(path.join(process.cwd(), 'dist', 'swagger.json'), JSON.stringify(swaggerSpec, null, 2));
+writeFileSync(
+  path.join(process.cwd(), 'dist', 'swagger.json'),
+  JSON.stringify(swaggerSpec, null, 2)
+);
 
 console.log('Wrote dist/swagger.json');

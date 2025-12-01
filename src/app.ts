@@ -12,14 +12,16 @@ const app = express();
 
 // Middleware stack
 app.use(helmet());
-app.use(cors({
-	origin: () => {
-		// Always use env.CORS_ORIGINS, fallback to '*'
-		if (!env.CORS_ORIGINS) return '*';
-		if (env.CORS_ORIGINS === '*') return '*';
-		return env.CORS_ORIGINS.split(',').map(o => o.trim());
-	}
-}));
+app.use(
+  cors({
+    origin: () => {
+      // Always use env.CORS_ORIGINS, fallback to '*'
+      if (!env.CORS_ORIGINS) return '*';
+      if (env.CORS_ORIGINS === '*') return '*';
+      return env.CORS_ORIGINS.split(',').map((o) => o.trim());
+    },
+  })
+);
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cookieParser());
