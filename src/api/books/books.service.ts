@@ -1,4 +1,3 @@
-import { getBookByIdValidator } from './books.validators';
 import { Request, Response } from 'express';
 import { matchedData } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
