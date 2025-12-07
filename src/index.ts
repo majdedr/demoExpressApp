@@ -1,13 +1,8 @@
-import app from './app';
-import { cleanEnv, str, port } from 'envalid';
+import { createApp } from './app';
+import { env } from './config/env.config';
 
-const env = cleanEnv(process.env, {
-  ENV: str({ choices: ['local', 'production'], default: 'local' }),
-  PORT: port({ default: 4000 }),
-});
+const app = createApp();
 
-const PORT = env.PORT;
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`Server running on port ${env.PORT}`);
 });

@@ -40,3 +40,17 @@ export const getBookById = (req: Request, res: Response) => {
 export const getAllBooks = (req: Request, res: Response) => {
   res.json(books);
 };
+
+export const deleteBook = (req: Request, res: Response) => {
+  const { id } = matchedData<{ id: string }>(req);
+
+  const bookIndex = books.findIndex((b) => b.id === id);
+
+  if (bookIndex === -1) {
+    return res.status(404).send('Book not found');
+  }
+
+  books.splice(bookIndex, 1);
+
+  res.sendStatus(204);
+};
