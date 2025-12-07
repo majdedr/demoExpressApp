@@ -2,6 +2,7 @@
   "scripts": {
     "swagger": "tsx src/swagger/swagger.config.ts",
     "dev": "yarn swagger && tsx src/index.ts",
+     "dev:all": "yarn swagger && yarn dev",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest",
